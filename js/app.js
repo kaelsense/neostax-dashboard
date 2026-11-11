@@ -590,7 +590,148 @@
     if (lastData) apply(lastData);
   }, { passive: true });
 
+
+  function startHeroClips() {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const video = el("hero-video");
+    const heroImg = document.querySelector(".hero-img");
+    if (!video || !heroImg) return;
+    if (reduce.matches) return;
+
+    const names = ["type", "glance", "nod", "breath", "glow"];
+    const root = String(heroImg.getAttribute("src") || "assets/hero-matrix.jpg").replace(/hero-matrix\.jpg$/, "clips/");
+    const clips = names.map((name) => ({
+      name,
+      webm: root + "hero-" + name + ".webm",
+      mp4: root + "hero-" + name + ".mp4",
+    }));
+    const preferWebm = !!video.canPlayType('video/webm; codecs="vp9"');
+    let last = -1;
+    let timer = null;
+    let faded = false;
+
+    function delay() {
+      return 30000 + Math.random() * 60000;
+    }
+
+    function pick() {
+      if (clips.length === 1) return 0;
+      let i = Math.floor(Math.random() * clips.length);
+      if (i === last) i = (i + 1 + Math.floor(Math.random() * (clips.length - 1))) % clips.length;
+      return i;
+    }
+
+    function loadClip(clip) {
+      video.pause();
+      video.removeAttribute("src");
+      while (video.firstChild) video.removeChild(video.firstChild);
+      const src = document.createElement("source");
+      if (preferWebm) {
+        src.src = clip.webm;
+        src.type = "video/webm";
+      } else {
+        src.src = clip.mp4;
+        src.type = "video/mp4";
+      }
+      video.appendChild(src);
+      if (preferWebm) {
+        const fallback = document.createElement("source");
+        fallback.src = clip.mp4;
+        fallback.type = "video/mp4";
+        video.appendChild(fallback);
+      }
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.setAttribute("playsinline", "");
+      video.setAttribute("webkit-playsinline", "");
+      video.preload = "auto";
+      video.load();
+      return new Promise((resolve) => {
+        const done = () => {
+          video.removeEventListener("canplaythrough", done);
+          video.removeEventListener("error", done);
+          resolve();
+        };
+        video.addEventListener("canplaythrough", done);
+        video.addEventListener("error", done);
+        setTimeout(done, 6000);
+      });
+    }
+
+    function schedule() {
+      clearTimeout(timer);
+      timer = setTimeout(playOne, delay());
+    }
+
+    function hide() {
+      faded = true;
+      video.classList.remove("is-on");
+    }
+
+    function playOne() {
+      if (reduce.matches) return;
+      const i = pick();
+      const clip = clips[i];
+      last = i;
+      faded = false;
+      loadClip(clip).then(() => {
+        if (reduce.matches) return;
+        video.currentTime = 0;
+        const play = video.play();
+        video.classList.add("is-on");
+        if (play && play.catch) {
+          play.catch(() => {
+            hide();
+            schedule();
+          });
+        }
+      });
+    }
+
+    video.addEventListener("timeupdate", () => {
+      if (faded || video.paused || !video.duration) return;
+      if (video.duration - video.currentTime <= 0.45) hide();
+    });
+    video.addEventListener("ended", () => {
+      hide();
+      video.pause();
+      schedule();
+    });
+    reduce.addEventListener("change", () => {
+      if (reduce.matches) {
+        clearTimeout(timer);
+        hide();
+        video.pause();
+      } else {
+        schedule();
+      }
+    });
+
+    function warm() {
+      clips.forEach((clip) => {
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "video";
+        link.href = preferWebm ? clip.webm : clip.mp4;
+        link.setAttribute("fetchpriority", "low");
+        document.head.appendChild(link);
+      });
+    }
+
+    const begin = () => {
+      warm();
+      schedule();
+    };
+    if (document.readyState === "complete") {
+      setTimeout(begin, 1200);
+    } else {
+      window.addEventListener("load", () => setTimeout(begin, 1200), { once: true });
+    }
+  }
+
   startRain();
+  startHeroClips();
   poll();
   setInterval(poll, POLL_MS);
 })();

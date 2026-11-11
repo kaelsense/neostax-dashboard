@@ -342,3 +342,22 @@ main {
 
 .hero-meta .fresh { color: var(--muted); }
 .hero-meta .stale { color: #c9a36a; }
+
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+  z-index: 0;
+}
+.hero-img { z-index: 0; }
+.hero-video.is-on { opacity: 1; }
+.hero-fade { z-index: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-video { display: none !important; }
+}
