@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#03080c">
+  <meta name="robots" content="noindex">
+  <title>Neostax · Live grid</title>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <canvas id="rain" class="rain" aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="app">
+    <header class="hero">
+      <img class="hero-img" src="assets/hero-matrix.jpg" alt="" width="720" height="1280">
+      <div class="hero-fade"></div>
+      <div class="hero-ui">
+        <div class="toprow">
+          <span class="brand">Neostax</span>
+          <span class="pill" id="live-pill"><span class="dot" id="live-dot"></span><span id="live-pill-text">Live</span></span>
+        </div>
+        <p class="pair" id="pair-label">BTC/EUR</p>
+        <p class="kicker">Egenkapital</p>
+        <h1 class="equity" id="equity">—</h1>
+        <p class="pnl" id="pnl">—</p>
+        <div class="hero-meta">
+          <span id="status-text">Laster…</span>
+          <span id="updated">Sist oppdatert —</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="stats" aria-label="Nøkkeltall">
+        <div class="stat">
+          <span class="lbl">Pris</span>
+          <span class="val" id="stat-price">—</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Saldo</span>
+          <span class="val" id="stat-quote">—</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">BTC</span>
+          <span class="val" id="stat-btc">—</span>
+        </div>
+        <div class="stat">
+          <span class="lbl">Åpne ordrer</span>
+          <span class="val" id="stat-orders">—</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Pris</h2>
+          <span class="panel-sub" id="price-range"></span>
+        </div>
+        <canvas id="price-chart" width="896" height="360"></canvas>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Gridnivåer</h2>
+          <span class="panel-sub" id="grid-sub"></span>
+        </div>
+        <div class="grid-wrap">
+          <canvas id="grid-chart" width="896" height="420"></canvas>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Siste handler</h2>
+        </div>
+        <div id="trades" class="trades empty">Ingen handler ennå</div>
+      </section>
+
+      <section class="panel quiet" id="breaker-panel">
+        <div class="panel-head">
+          <h2>Status</h2>
+        </div>
+        <dl class="meta-list" id="meta-list"></dl>
+      </section>
+
+      <section class="panel paper" id="paper-panel">
+        <div class="panel-head">
+          <h2>Prøvemodus</h2>
+          <span class="pill dim" id="paper-pill"><span class="dot grey"></span> Paper</span>
+        </div>
+        <div class="paper-row">
+          <div>
+            <span class="lbl">Egenkapital</span>
+            <span class="val" id="paper-equity">—</span>
+          </div>
+          <div>
+            <span class="lbl">Gevinst/tap</span>
+            <span class="val" id="paper-pnl">—</span>
+          </div>
+          <div>
+            <span class="lbl">Pris</span>
+            <span class="val" id="paper-price">—</span>
+          </div>
+        </div>
+        <canvas id="paper-chart" width="896" height="140"></canvas>
+        <p class="paper-foot" id="paper-foot"></p>
+      </section>
+    </main>
+  </div>
+  <script src="js/app.js"></script>
+</body>
+</html>
