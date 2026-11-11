@@ -339,3 +339,6 @@ main {
   * { animation: none !important; }
   .equity, .pnl, .val { transition: none; }
 }
+
+.hero-meta .fresh { color: var(--muted); }
+.hero-meta .stale { color: #c9a36a; }

@@ -423,6 +423,24 @@
 
     el("status-text").textContent = statusLabel(live);
     el("updated").textContent = "Sist oppdatert " + fmtTime(data.updated_at, false);
+    const freshEl = el("price-fresh");
+    if (freshEl) {
+      const src = live.price_source;
+      const age = live.price_age_seconds != null ? live.price_age_seconds : live.ws_age_seconds;
+      const stale = !!live.price_stale || src === "rest";
+      let freshTxt = "";
+      if (src === "rest" || live.price_stale) {
+        const ageTxt = age != null ? `${Math.round(age)} s` : "?";
+        freshTxt = `Pris fra REST (WS utdatert, ${ageTxt})`;
+      } else if (src === "ws") {
+        const ageTxt = age != null ? `${Math.round(age)} s siden` : "live";
+        freshTxt = `Pris fra WebSocket (${ageTxt})`;
+      } else if (ticker && ticker.age_seconds != null) {
+        freshTxt = `Børspris ${Math.round(ticker.age_seconds)} s siden`;
+      }
+      freshEl.textContent = freshTxt;
+      freshEl.className = stale ? "stale" : "fresh";
+    }
 
     animateTo(el("stat-price"), "price", px, (v) => fmtPrice(v, ccy));
     const quote = live.balances && live.balances.quote;
